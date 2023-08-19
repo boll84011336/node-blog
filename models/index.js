@@ -9,10 +9,15 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+if(process.env.MYSQL_HOST) {
+  const { MYSQL_HOST, MYSQL_PORT, MYSQL_USERNAME, MYSQL_PASSWORD } = process.env;
+  sequelize = new Sequelize("blog", MYSQL_USERNAME, MYSQL_PASSWORD, { host: MYSQL_HOST, port: MYSQL_PORT });
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  if (config.use_env_variable) {
+    sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  } else {
+    sequelize = new Sequelize(config.database, config.username, config.password, config);
+  }
 }
 
 fs
